@@ -48,6 +48,7 @@ namespace ZipFileViewer
 
             var file = controller.OpenImage(fileName);
             var viewer = new ImageCanvas();
+            viewer.Title = fileName;
             viewer.ShowImage(file);
             viewer.Show();
         }
