@@ -25,26 +25,32 @@ namespace ZipFileViewer
             InitializeComponent();
         }
 
+        //TODO filter by mimetype
         public void ShowImage(MemoryStream stream) 
         {
-            stream.Position = 0;
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.StreamSource = stream;
-            bitmapImage.EndInit();
+            try
+            {
+                stream.Position = 0;
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = stream;
+                bitmapImage.EndInit();
 
-            image1.Width = bitmapImage.Width;
-            image1.Height = bitmapImage.Height;
+                image1.Width = bitmapImage.Width;
+                image1.Height = bitmapImage.Height;
 
-            var screenInfo = GetScreenInfo();
+                var screenInfo = GetScreenInfo();
 
-            image1.Height = screenInfo.Height - 150;
-            image1.Width = (image1.Height * bitmapImage.Width) / bitmapImage.Height; 
+                image1.Height = screenInfo.Height - 150;
+                image1.Width = (image1.Height * bitmapImage.Width) / bitmapImage.Height;
 
-            Height = image1.Height + 3;
-            Width = image1.Width + 3;
+                Height = image1.Height + 3;
+                Width = image1.Width + 3;
 
-            image1.Source = bitmapImage;
+                image1.Source = bitmapImage;
+            }
+            catch (NotSupportedException) 
+            { }
         }
 
         private System.Drawing.Size GetScreenInfo() 

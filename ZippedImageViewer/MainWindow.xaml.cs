@@ -44,6 +44,8 @@ namespace ZipFileViewer
         private void listView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var fileName = ((ListView)sender).SelectedItem as string;
+            if(string.IsNullOrEmpty(fileName)) return;
+
             var file = controller.OpenImage(fileName);
             var viewer = new ImageCanvas();
             viewer.ShowImage(file);
