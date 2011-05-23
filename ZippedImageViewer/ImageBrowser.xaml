@@ -3,7 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="ZipFileViewer.ImageBrowser"
 	x:Name="Window"
-	Title="ImageBrowser" Opacity="0.5" WindowStyle="None" VerticalAlignment="Top" HorizontalAlignment="Left" ShowInTaskbar="True" AllowsTransparency="True" VerticalContentAlignment="Center" Height="300" Width="300">
+	Title="ImageBrowser" Opacity="0.7" WindowStyle="None" VerticalAlignment="Top" HorizontalAlignment="Left" ShowInTaskbar="True" AllowsTransparency="True" VerticalContentAlignment="Center" Height="300" Width="300" Background="Gray">
 	<Window.Effect>
 		<BlurEffect/>
 	</Window.Effect>

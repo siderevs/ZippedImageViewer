@@ -30,8 +30,31 @@ namespace ZipFileViewer
 
         public void ShowImageBrowser(IEnumerable<string> filesNames)
         {
+            Size imageBrowserSize = GetImageBrowserSize();
+            Point imageBrowserLocation = GetImageBrowserLocation();
             var browser = new ImageBrowser();
+            browser.Width = imageBrowserSize.Width;
+            browser.Height = imageBrowserSize.Height;
+            browser.Left = imageBrowserLocation.X;
+            browser.Top = imageBrowserLocation.Y;
             browser.Show();
+        }
+
+        private Size GetImageBrowserSize()
+        {
+            var size = new Size();
+            size.Width = (int)System.Windows.SystemParameters.WorkArea.Width;
+            size.Height = (int)System.Windows.SystemParameters.WorkArea.Height / 4;
+
+            return size;
+        }
+
+        private Point GetImageBrowserLocation()
+        {
+            var location = new Point();
+            location.Y = 0;
+            location.X = 0;
+            return location;
         }
 
         public void OpenImage(string path) 
