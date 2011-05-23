@@ -38,6 +38,7 @@ namespace ZipFileViewer
                 var list = controller.GetList();
 
                 listView1.ItemsSource = list;
+                controller.ShowImageBrowser(list);
             }
         }
 
@@ -46,11 +47,7 @@ namespace ZipFileViewer
             var fileName = ((ListView)sender).SelectedItem as string;
             if(string.IsNullOrEmpty(fileName)) return;
 
-            var file = controller.OpenImage(fileName);
-            var viewer = new ImageCanvas();
-            viewer.Title = fileName;
-            viewer.ShowImage(file);
-            viewer.Show();
+            controller.OpenImage(fileName);
         }
     }
 }

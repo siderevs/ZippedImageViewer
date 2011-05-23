@@ -28,7 +28,13 @@ namespace ZipFileViewer
             return names;
         }
 
-        public MemoryStream OpenImage(string path) 
+        public void ShowImageBrowser(IEnumerable<string> filesNames)
+        {
+            //var browser = new ImageBrowser();
+            //browser.Show();
+        }
+
+        public void OpenImage(string path) 
         {
             var memoryStream = new MemoryStream();
             using (var zipFile = ZipFile.Read(fileName))
@@ -37,7 +43,10 @@ namespace ZipFileViewer
                 file.Extract(memoryStream);
             }
 
-            return memoryStream;
+            var viewer = new ImageCanvas();
+            viewer.Title = fileName;
+            viewer.ShowImage(memoryStream);
+            viewer.Show();
         }
     }
 }
