@@ -23,5 +23,10 @@ namespace ZipFileViewer
 			
 			// Insert code required on object creation below this point.
 		}
+
+        public void Add(Image image) 
+        {
+            stackPanel1.Children.Add(image);
+        }
 	}
 }

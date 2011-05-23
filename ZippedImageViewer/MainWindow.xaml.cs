@@ -47,7 +47,8 @@ namespace ZipFileViewer
             var fileName = ((ListView)sender).SelectedItem as string;
             if(string.IsNullOrEmpty(fileName)) return;
 
-            controller.OpenImage(fileName);
+            var image = controller.OpenImage(fileName);
+            controller.ShowImage(image);
         }
     }
 }

@@ -53,6 +53,22 @@ namespace ZipFileViewer
             { }
         }
 
+        public void ShowImage(BitmapImage bitmapImage)
+        {
+            image1.Width = bitmapImage.Width;
+            image1.Height = bitmapImage.Height;
+
+            var screenInfo = GetScreenInfo();
+
+            image1.Height = screenInfo.Height - 150;
+            image1.Width = (image1.Height * bitmapImage.Width) / bitmapImage.Height;
+
+            Height = image1.Height + 3;
+            Width = image1.Width + 3;
+
+            image1.Source = bitmapImage;
+        }
+
         private System.Drawing.Size GetScreenInfo() 
         {
             var width = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width;
@@ -60,6 +76,5 @@ namespace ZipFileViewer
             var size = new System.Drawing.Size(width, height);
             return size;
         }
-
     }
 }
