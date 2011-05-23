@@ -38,46 +38,45 @@ namespace ZipFileViewer
 
         private void PopulateImageBrowser(ImageBrowser browser, IEnumerable<string> filesNames)
         {
-            for (int i = 0; i < 15; i++) 
+            foreach (var file in filesNames)
             {
-                var bitmapImage = LoadBitmapImage(filesNames.ToArray()[i]);
+                var bitmapImage = LoadThumbnailBitmapImage(file);
+                if (bitmapImage == null)
+                    return;
+
                 var imageControl = new System.Windows.Controls.Image();
                 imageControl.Opacity = 0.5;
+                imageControl.Margin = new System.Windows.Thickness(10, 10, 10, 10);
                 imageControl.MouseDown += new System.Windows.Input.MouseButtonEventHandler(ImageControlMouseDown);
                 imageControl.MouseEnter += new System.Windows.Input.MouseEventHandler(imageControl_MouseEnter);
                 imageControl.MouseLeave += new System.Windows.Input.MouseEventHandler(imageControl_MouseLeave);
                 imageControl.Source = bitmapImage;
-                browser.Add(imageControl);
- 
+                imageControl.Tag = file;
+                browser.Add(imageControl); 
             }
-                //foreach (var file in filesNames)
-                //{
-                //    var bitmapImage = LoadBitmapImage(file);
-                //    var imageControl = new System.Windows.Controls.Image();
-                //    imageControl.Source = bitmapImage;
-                //    browser.Add(imageControl);
-                //}
         }
 
         void imageControl_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var imageControl = sender as System.Windows.Controls.Image;
+            imageControl.Margin = new System.Windows.Thickness(10, 10, 10, 10);
             imageControl.Opacity = 0.5;
         }
 
         void imageControl_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var imageControl = sender as System.Windows.Controls.Image;
+            imageControl.Margin = new System.Windows.Thickness(0, 0, 0, 0);
             imageControl.Opacity = 1;
         }
 
         void ImageControlMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var imageControl = sender as System.Windows.Controls.Image;
-            ShowImage(imageControl.Source as BitmapImage);
+            var imageControl = sender as System.Windows.Controls.Image;            
+            ShowImage(OpenImage(imageControl.Tag as string));
         }
 
-        private BitmapImage LoadBitmapImage(string file)
+        private BitmapImage LoadThumbnailBitmapImage(string file)
         {            
             var bitmapImage = new BitmapImage();
             var image = OpenImage(file);
@@ -85,11 +84,15 @@ namespace ZipFileViewer
             try
             {   
                 bitmapImage.BeginInit();
+                bitmapImage.DecodePixelWidth = 300;
+                bitmapImage.CacheOption = BitmapCacheOption.None;
                 bitmapImage.StreamSource = image;
                 bitmapImage.EndInit();
             }
-            catch (NotSupportedException)
-            { }
+            catch (NotSupportedException)            
+            {
+                return null;
+            }
 
             return bitmapImage;
         }
