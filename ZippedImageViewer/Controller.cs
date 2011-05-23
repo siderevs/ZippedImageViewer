@@ -30,8 +30,8 @@ namespace ZipFileViewer
 
         public void ShowImageBrowser(IEnumerable<string> filesNames)
         {
-            //var browser = new ImageBrowser();
-            //browser.Show();
+            var browser = new ImageBrowser();
+            browser.Show();
         }
 
         public void OpenImage(string path) 
