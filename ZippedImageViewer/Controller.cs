@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Ionic.Zip;
 using System.Drawing;
 using System.IO;
@@ -39,45 +41,49 @@ namespace ZipFileViewer
         private async void PopulateImageBrowser(ImageBrowser browser, IEnumerable<string> filesNames)
         {
             var bitmapImages = await LoadThumbnailBitmapImage(filesNames);
-            AddImages(browser, bitmapImages);
+            var observableImages = bitmapImages.ToList().ToObservable();
+            observableImages.Subscribe<BitmapImage>(image =>
+                                                        {
+                                                            Dispatcher.CurrentDispatcher.Invoke(
+                                                                DispatcherPriority.Background,
+                                                                new Action<ImageBrowser, BitmapImage>(AddImage),
+                                                                browser, image);
+                                                        }, () => { });
         }
 
-        private void AddImages(ImageBrowser browser, BitmapImage[] bitmapImages)
+        private void AddImage(ImageBrowser browser, BitmapImage bitmapImage)
         {
-            foreach (var bitmapImage in bitmapImages)
+            var imageControl = new System.Windows.Controls.Image
             {
-                var imageControl = new System.Windows.Controls.Image
-                {
-                    Opacity = 0.5,
-                    Margin = new System.Windows.Thickness(10, 10, 10, 10),
-                    Source = bitmapImage,
-                    //Tag = bitmapImage.UriSource.AbsolutePath
-                };
+                Opacity = 0.5,
+                Margin = new System.Windows.Thickness(10, 10, 10, 10),
+                Source = bitmapImage,
+                //Tag = bitmapImage.UriSource.AbsolutePath
+            };
 
-                imageControl.MouseDown += ImageControlMouseDown;
-                imageControl.MouseEnter += imageControl_MouseEnter;
-                imageControl.MouseLeave += imageControl_MouseLeave;
-                browser.Add(imageControl);
-            }
+            imageControl.MouseDown += ImageControlMouseDown;
+            imageControl.MouseEnter += ImageControlMouseEnter;
+            imageControl.MouseLeave += ImageControlMouseLeave;
+            browser.Add(imageControl);
         }
 
-        void imageControl_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        private void ImageControlMouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            var imageControl = sender as System.Windows.Controls.Image;
+            var imageControl = (System.Windows.Controls.Image)sender;
             imageControl.Margin = new System.Windows.Thickness(10, 10, 10, 10);
             imageControl.Opacity = 0.5;
         }
 
-        void imageControl_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        private void ImageControlMouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            var imageControl = sender as System.Windows.Controls.Image;
+            var imageControl = (System.Windows.Controls.Image)sender;
             imageControl.Margin = new System.Windows.Thickness(0, 0, 0, 0);
             imageControl.Opacity = 1;
         }
 
         void ImageControlMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            var imageControl = sender as System.Windows.Controls.Image;
+            var imageControl = (System.Windows.Controls.Image)sender;
             ShowImage(OpenImage(imageControl.Tag as string));
         }
 
@@ -121,7 +127,7 @@ namespace ZipFileViewer
             return browser;
         }
 
-        private Size GetImageBrowserSize()
+        private static Size GetImageBrowserSize()
         {
             var size = new Size
                            {
@@ -132,7 +138,7 @@ namespace ZipFileViewer
             return size;
         }
 
-        private Point GetImageBrowserLocation()
+        private static Point GetImageBrowserLocation()
         {
             var location = new Point {Y = 0, X = 0};
             return location;
