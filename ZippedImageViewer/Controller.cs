@@ -36,26 +36,28 @@ namespace ZipFileViewer
             browser.Show();
         }
 
-        private void PopulateImageBrowser(ImageBrowser browser, IEnumerable<string> filesNames)
+        private async void PopulateImageBrowser(ImageBrowser browser, IEnumerable<string> filesNames)
         {
-            foreach (var file in filesNames)
-            {
-                var bitmapImage = LoadThumbnailBitmapImage(file);
-                if (bitmapImage == null)
-                    return;
+            var bitmapImages = await LoadThumbnailBitmapImage(filesNames);
+            AddImages(browser, bitmapImages);
+        }
 
+        private void AddImages(ImageBrowser browser, BitmapImage[] bitmapImages)
+        {
+            foreach (var bitmapImage in bitmapImages)
+            {
                 var imageControl = new System.Windows.Controls.Image
-                                       {
-                                           Opacity = 0.5,
-                                           Margin = new System.Windows.Thickness(10, 10, 10, 10),
-                                           Source = bitmapImage,
-                                           Tag = file
-                                       };
+                {
+                    Opacity = 0.5,
+                    Margin = new System.Windows.Thickness(10, 10, 10, 10),
+                    Source = bitmapImage,
+                    //Tag = bitmapImage.UriSource.AbsolutePath
+                };
 
                 imageControl.MouseDown += ImageControlMouseDown;
                 imageControl.MouseEnter += imageControl_MouseEnter;
                 imageControl.MouseLeave += imageControl_MouseLeave;
-                browser.Add(imageControl); 
+                browser.Add(imageControl);
             }
         }
 
@@ -79,25 +81,30 @@ namespace ZipFileViewer
             ShowImage(OpenImage(imageControl.Tag as string));
         }
 
-        private BitmapImage LoadThumbnailBitmapImage(string file)
+        private async Task<BitmapImage[]> LoadThumbnailBitmapImage(IEnumerable<string> files)
         {
-            var bitmapImage = new BitmapImage();
-            var image = OpenImage(file);
-            image.Position = 0;
-            try
+            var images = new List<BitmapImage>();
+            foreach (var file in files)
             {
-                bitmapImage.BeginInit();
-                bitmapImage.DecodePixelWidth = 300;
-                bitmapImage.CacheOption = BitmapCacheOption.None;
-                bitmapImage.StreamSource = image;
-                bitmapImage.EndInit();
-            }
-            catch (NotSupportedException)
-            {
-                return null;
+                var bitmapImage = new BitmapImage();
+                var image = await TaskEx.Run(()=>OpenImage(file));
+                image.Position = 0;
+                try
+                {
+                    bitmapImage.BeginInit();
+                    bitmapImage.DecodePixelWidth = 300;
+                    bitmapImage.CacheOption = BitmapCacheOption.None;
+                    bitmapImage.StreamSource = image;
+                    bitmapImage.EndInit();
+                    images.Add(bitmapImage);
+                }
+                catch (NotSupportedException)
+                {
+
+                }
             }
 
-            return bitmapImage;
+            return images.ToArray();
         }
 
         private ImageBrowser InitImageBrowser()
