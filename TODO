@@ -2,3 +2,4 @@ Add a direct X shader to the image browser (blur or something)
 Add arrow key response from scrollviewer
 Resize of the image
 Mouse scroll response
+Drag & drop zip files into main window to open them
