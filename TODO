@@ -1,3 +1,4 @@
 Add a direct X shader to the image browser (blur or something)
 Add arrow key response from scrollviewer
-Add async loading
+Resize of the image
+Mouse scroll response
