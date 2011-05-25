@@ -41,24 +41,21 @@ namespace ZipFileViewer
         private async void PopulateImageBrowser(ImageBrowser browser, IEnumerable<string> filesNames)
         {
             var bitmapImages = await LoadThumbnailBitmapImage(filesNames);
-            var observableImages = bitmapImages.ToList().ToObservable();
-            observableImages.Subscribe<BitmapImage>(image =>
-                                                        {
-                                                            Dispatcher.CurrentDispatcher.Invoke(
-                                                                DispatcherPriority.Background,
-                                                                new Action<ImageBrowser, BitmapImage>(AddImage),
-                                                                browser, image);
-                                                        }, () => { });
+            var observableImages = bitmapImages.ToObservable();
+            observableImages.Subscribe(keypair =>
+            {
+                Dispatcher.CurrentDispatcher.Invoke(DispatcherPriority.Background, new Action<ImageBrowser, BitmapImage, string>(AddImage), browser, keypair.Value, keypair.Key);
+            });
         }
 
-        private void AddImage(ImageBrowser browser, BitmapImage bitmapImage)
+        private void AddImage(ImageBrowser browser, BitmapImage bitmapImage, string file)
         {
             var imageControl = new System.Windows.Controls.Image
             {
                 Opacity = 0.5,
                 Margin = new System.Windows.Thickness(10, 10, 10, 10),
                 Source = bitmapImage,
-                //Tag = bitmapImage.UriSource.AbsolutePath
+                Tag = file
             };
 
             imageControl.MouseDown += ImageControlMouseDown;
@@ -87,9 +84,9 @@ namespace ZipFileViewer
             ShowImage(OpenImage(imageControl.Tag as string));
         }
 
-        private async Task<BitmapImage[]> LoadThumbnailBitmapImage(IEnumerable<string> files)
+        private async Task<Dictionary<string,BitmapImage>> LoadThumbnailBitmapImage(IEnumerable<string> files)
         {
-            var images = new List<BitmapImage>();
+            var images = new Dictionary<string,BitmapImage>();
             foreach (var file in files)
             {
                 var bitmapImage = new BitmapImage();
@@ -102,7 +99,7 @@ namespace ZipFileViewer
                     bitmapImage.CacheOption = BitmapCacheOption.None;
                     bitmapImage.StreamSource = image;
                     bitmapImage.EndInit();
-                    images.Add(bitmapImage);
+                    images.Add(file, bitmapImage);
                 }
                 catch (NotSupportedException)
                 {
@@ -110,7 +107,7 @@ namespace ZipFileViewer
                 }
             }
 
-            return images.ToArray();
+            return images;
         }
 
         private ImageBrowser InitImageBrowser()
