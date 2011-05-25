@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Win32;
 
 namespace ZipFileViewer
@@ -18,7 +8,7 @@ namespace ZipFileViewer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private Controller controller;
 
@@ -31,15 +21,14 @@ namespace ZipFileViewer
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             var file = new OpenFileDialog();
-            Nullable<bool> result = file.ShowDialog();
-            if (result == true) 
-            {
-                controller.SetFileName(file.FileName);
-                var list = controller.GetList();
+            var result = file.ShowDialog();
+            if (result != true) return;
 
-                listView1.ItemsSource = list;
-                controller.ShowImageBrowser(list);
-            }
+            controller.SetFileName(file.FileName);
+            var list = controller.GetList();
+
+            listView1.ItemsSource = list;
+            controller.ShowImageBrowser(list);
         }
 
         private void listView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -47,7 +36,8 @@ namespace ZipFileViewer
             var fileName = ((ListView)sender).SelectedItem as string;
             if(string.IsNullOrEmpty(fileName)) return;
 
-            controller.OpenImage(fileName);
+            var image = controller.OpenImage(fileName);
+            controller.ShowImage(image);
         }
     }
 }
