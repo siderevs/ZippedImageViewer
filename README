@@ -1,1 +1,3 @@
-WPF .Net Application to view the images in a .zip file
+WPF .Net Application to view the images in a .zip files
+
+It uses Async CTP, Reactive Extensions, .Net 4
