@@ -20,7 +20,7 @@ namespace ZipFileViewer
             fileName = path;
         }
 
-        public IEnumerable<string> GetList() 
+        private IEnumerable<string> GetList() 
         {
             List<string> names;
             using(var zipFile = ZipFile.Read(fileName))
@@ -31,9 +31,10 @@ namespace ZipFileViewer
             return names;
         }
 
-        public void ShowImageBrowser(IEnumerable<string> filesNames)
+        public void ShowImageBrowser()
         {
             var browser = InitImageBrowser();
+            var filesNames = GetList();
             PopulateImageBrowser(browser, filesNames);
             browser.Show();
         }
@@ -78,10 +79,11 @@ namespace ZipFileViewer
             imageControl.Opacity = 1;
         }
 
-        void ImageControlMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void ImageControlMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             var imageControl = (System.Windows.Controls.Image)sender;
-            ShowImage(OpenImage(imageControl.Tag as string));
+            var image = OpenImage(imageControl.Tag.ToString());
+            ShowImage(image);
         }
 
         private async Task<Dictionary<string,BitmapImage>> LoadThumbnailBitmapImage(IEnumerable<string> files)
@@ -141,7 +143,7 @@ namespace ZipFileViewer
             return location;
         }
 
-        public MemoryStream OpenImage(string path) 
+        private MemoryStream OpenImage(string path) 
         {
             var memoryStream = new MemoryStream();
             using (var zipFile = ZipFile.Read(fileName))
@@ -153,17 +155,10 @@ namespace ZipFileViewer
             return memoryStream;
         }
 
-        public void ShowImage(MemoryStream memoryStream)
+        private void ShowImage(MemoryStream memoryStream)
         {
             var viewer = new ImageCanvas {Title = fileName};
             viewer.ShowImage(memoryStream);
-            viewer.Show();
-        }
-
-        public void ShowImage(BitmapImage bitmap)
-        {
-            var viewer = new ImageCanvas();
-            viewer.ShowImage(bitmap);
             viewer.Show();
         }
     }

@@ -25,19 +25,7 @@ namespace ZipFileViewer
             if (result != true) return;
 
             controller.SetFileName(file.FileName);
-            var list = controller.GetList();
-
-            listView1.ItemsSource = list;
-            controller.ShowImageBrowser(list);
-        }
-
-        private void listView1_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var fileName = ((ListView)sender).SelectedItem as string;
-            if(string.IsNullOrEmpty(fileName)) return;
-
-            var image = controller.OpenImage(fileName);
-            controller.ShowImage(image);
+            controller.ShowImageBrowser();
         }
     }
 }
